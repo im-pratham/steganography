@@ -12,7 +12,7 @@ PPMImage *readPPM(const char *filename)
 	//open PPM file for reading
 	fp = fopen(filename, "rb");
 	if (!fp) {
-		fprintf(stderr, "Unable to open file '%s'\n", filename);
+		printf("Unable to open file '%s'\n", filename);
 		exit(1);
 	}
 	
@@ -23,18 +23,18 @@ PPMImage *readPPM(const char *filename)
 	}
  	//check the image format
 	if (buff[0] != 'P' || buff[1] != '6') {
-		fprintf(stderr, "Invalid image format (must be 'P6')\n");
+		printf("Invalid image format (must be 'P6')\n");
 		exit(1);
 	}
 
-	//alloc memory for image
+	//allocate memory for image
 	img = (PPMImage *)malloc(sizeof(PPMImage));
 	if (!img) {
-		fprintf(stderr, "Unable to allocate memory\n");
+		printf("Unable to allocate memory\n");
 		exit(1);
 	}	
 
-	//check for comments
+	//checking for comments
 	c = getc(fp);
 	while (c == '#') {
 		while (getc(fp) != '\n') ;
@@ -50,13 +50,13 @@ PPMImage *readPPM(const char *filename)
 	
 	//read rgb component
 	if (fscanf(fp, "%d", &rgb_comp_color) != 1) {
-		fprintf(stderr, "Invalid rgb component (error loading '%s')\n", filename);
+		printf("Invalid rgb component (error loading '%s')\n", filename);
 		exit(1);
 	}
 
 	//check rgb component depth
 	if (rgb_comp_color!= RGB_COMPONENT_COLOR) {
-		fprintf(stderr, "'%s' does not have 8-bits components\n", filename);
+		printf("'%s' does not have 8-bits components\n", filename);
 		exit(1);
 	}
 
@@ -71,7 +71,7 @@ PPMImage *readPPM(const char *filename)
 
 	//read pixel data from file
 	if (fread(img->data, 3 * img->x, img->y, fp) != img->y) {
-		fprintf(stderr, "Error loading image '%s'\n", filename);
+		printf("Error loading image '%s'\n", filename);
 		exit(1);
 	}
 
@@ -88,7 +88,7 @@ void readData(const char *filename, char *dataout) {
 	//open PPM file for reading
 	fp = fopen(filename, "rb");
 	if (!fp) {
-		fprintf(stderr, "Unable to open file '%s'\n", filename);
+		printf("Unable to open file '%s'\n", filename);
 		exit(1);
 	}
 	
@@ -99,14 +99,14 @@ void readData(const char *filename, char *dataout) {
 	}
  	//check the image format
 	if (buff[0] != 'P' || buff[1] != '6') {
-		fprintf(stderr, "Invalid image format (must be 'P6')\n");
+		printf("Invalid image format (must be 'P6')\n");
 		exit(1);
 	}
 
 	//alloc memory for image
 	img = (PPMImage *)malloc(sizeof(PPMImage));
 	if (!img) {
-		fprintf(stderr, "Unable to allocate memory\n");
+		printf("Unable to allocate memory\n");
 		exit(1);
 	}	
 
@@ -120,19 +120,19 @@ void readData(const char *filename, char *dataout) {
 	ungetc(c, fp);
 	//read image size information
 	if (fscanf(fp, "%d %d", &img->x, &img->y) != 2) {
-		fprintf(stderr, "Invalid image size (error loading '%s')\n", filename);
+		printf("Invalid image size (error loading '%s')\n", filename);
 		exit(1);
 	}
 	
 	//read rgb component
 	if (fscanf(fp, "%d", &rgb_comp_color) != 1) {
-		fprintf(stderr, "Invalid rgb component (error loading '%s')\n", filename);
+		printf("Invalid rgb component (error loading '%s')\n", filename);
 		exit(1);
 	}
 
 	//check rgb component depth
 	if (rgb_comp_color!= RGB_COMPONENT_COLOR) {
-		fprintf(stderr, "'%s' does not have 8-bits components\n", filename);
+		printf("'%s' does not have 8-bits components\n", filename);
 		exit(1);
 	}
 
@@ -141,13 +141,13 @@ void readData(const char *filename, char *dataout) {
 	img->data = (PPMPixel*)malloc(img->x * img->y * sizeof(PPMPixel));
 
 	if (!img) {
-		fprintf(stderr, "Unable to allocate memory\n");
+		printf("Unable to allocate memory\n");
 		exit(1);
 	}
 
 	//read pixel data from file
 	if (fread(img->data, 3 * img->x, img->y, fp) != img->y) {
-		fprintf(stderr, "Error loading image '%s'\n", filename);
+		printf("Error loading image '%s'\n", filename);
 		exit(1);
 	}
 	
