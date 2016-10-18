@@ -1,0 +1,2 @@
+void writemain();
+void readmain();
