@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 #include "project.h"
 
 void menu() {
@@ -8,16 +9,21 @@ void menu() {
 }
 
 int main() {
+	char filename[32];
 	do {
 		menu();
 		int c;
 		scanf("%d", &c);
 		switch(c) {
 			case 1:
-				writemain();
+				printf("Enter Image Name\n");
+				scanf("%s", filename);
+				writemain(filename);
 				break;
 			case 2:
-				readmain();
+				printf("Enter Image Name\n");
+				scanf("%s", filename);
+				readmain(filename);
 				break;
 			case 3:
 				return 0;

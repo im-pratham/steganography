@@ -3,10 +3,10 @@
 #include <string.h>
 #include "ppm.h"
 
-int writemain(){
-	char filename[32];
-	printf("Enter Image Name\n");
-	scanf("%s", filename);
+int writemain(char *filename){
+	//char filename[32];
+	//printf("Enter Image Name\n");
+	//scanf("%s", filename);
 	
 	PPMImage *image;
 	image = readPPM(filename);
