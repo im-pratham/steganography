@@ -8,28 +8,32 @@ void menu() {
 	printf("3. Exit\n");
 }
 
-int main() {
-	char filename[32];
-	do {
-		menu();
-		int c;
-		scanf("%d", &c);
+int mainpro(char *filename, int cas) {
+	//char filename[32];
+	int err;
+		int c = cas;
+		//scanf("%d", &c);
 		switch(c) {
 			case 1:
-				printf("Enter Image Name\n");
-				scanf("%s", filename);
-				writemain(filename);
+				//printf("Enter Image Name\n");
+				//scanf("%s", filename);
+				err = writemain(filename);
+				if(err == -1) {
+					//printf("Error while handling input file\n");
+					return -1;
+				}
 				break;
 			case 2:
 				printf("Enter Image Name\n");
 				scanf("%s", filename);
-				readmain(filename);
+				err = readmain(filename);
+				if(err == -1) {
+					//printf("Error while handling input file\n");
+					return -1;
+				}
 				break;
 			case 3:
 				return 0;
-			default:
-				printf("Invalid choice\n");
 		}
-	}while(1);
 	return 0;
 }

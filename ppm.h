@@ -10,7 +10,7 @@ typedef struct PPMImage{
 } PPMImage;
 
 PPMImage *readPPM(const char *filename);
-void writePPM(const char *filename, PPMImage *img);
+int writePPM(const char *filename, PPMImage *img);
 void changeColorPPM(PPMImage *img, char *inputd);
-void readData(const char *filename, char *dataout);
+int readData(const char *filename, char *dataout);
 

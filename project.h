@@ -1,2 +1,2 @@
-void writemain();
-void readmain();
+int writemain(char *filename);
+int readmain(char *filename);
