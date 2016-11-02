@@ -1,5 +1,5 @@
 project: project.o stegowrite.o stegoread.o
-	cc project.o stegowrite.o stegoread.o ppm.o -o project
+	cc project.o stegowrite.o stegoread.o ppm.o -o project -lmenu -lncurses -lform
 project.o: project.c project.h
 	cc -Wall -c project.c
 stegowrite.o: stegowrite.c ppm.o ppm.h

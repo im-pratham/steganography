@@ -3,38 +3,34 @@
 #include <string.h>
 #include "ppm.h"
 
-PPMImage *readPPM(const char *filename)
+Image *readImage(char *filename)
 {
 	char buff[16];
-	PPMImage *img;
+	Image *img;
 	FILE *fp;
 	int c, rgb_comp_color;
-	//open PPM file for reading
+	
 	fp = fopen(filename, "rb");
 	if (!fp) {
-		printf("Unable to open file '%s'\n", filename);
-		exit(1);
+		return NULL;
 	}
 	
 	//read image format
 	if (!fgets(buff, sizeof(buff), fp)) {
-		perror(filename);
-		exit(1);
+		return NULL;
 	}
- 	//check the image format
+ 	//the ppm image has a format P6
 	if (buff[0] != 'P' || buff[1] != '6') {
-		printf("Invalid image format (must be 'P6')\n");
-		exit(1);
+		return NULL;
 	}
 
-	//allocate memory for image
-	img = (PPMImage *)malloc(sizeof(PPMImage));
+	img = (Image *)malloc(sizeof(Image));
 	if (!img) {
-		printf("Unable to allocate memory\n");
-		exit(1);
+		//error in malloc
+		return NULL;
 	}	
 
-	//checking for comments
+	//excluding comments as comments are written in image preceding #
 	c = getc(fp);
 	while (c == '#') {
 		while (getc(fp) != '\n') ;
@@ -42,37 +38,35 @@ PPMImage *readPPM(const char *filename)
 	}
 
 	ungetc(c, fp);
-	//read image size information
+	//read image x and y size
 	if (fscanf(fp, "%d %d", &img->x, &img->y) != 2) {
-		fprintf(stderr, "Invalid image size (error loading '%s')\n", filename);
-		exit(1);
+		return NULL;
 	}
 	
 	//read rgb component
 	if (fscanf(fp, "%d", &rgb_comp_color) != 1) {
-		printf("Invalid rgb component (error loading '%s')\n", filename);
-		exit(1);
+		return NULL;
 	}
 
 	//check rgb component depth
-	if (rgb_comp_color!= RGB_COMPONENT_COLOR) {
-		printf("'%s' does not have 8-bits components\n", filename);
-		exit(1);
+	if (rgb_comp_color != MAX_COLOR) {
+		return NULL;
 	}
 
 	while (fgetc(fp) != '\n') ;
-	//memory allocation for pixel data
-	img->data = (PPMPixel*)malloc(img->x * img->y * sizeof(PPMPixel));
+	//memory allocation for pixels
+	img->data = (Pixel*)malloc(img->x * img->y * sizeof(Pixel));
 
 	if (!img) {
-		fprintf(stderr, "Unable to allocate memory\n");
-		exit(1);
+		return NULL;
 	}
 
-	//read pixel data from file
+	/*
+	read (img->y) sized pixel data of size each (3 * img->x) from file
+	3 becoz of RGB structure of pixel
+	*/
 	if (fread(img->data, 3 * img->x, img->y, fp) != img->y) {
-		printf("Error loading image '%s'\n", filename);
-		exit(1);
+		return NULL;
 	}
 
 	fclose(fp);
@@ -80,37 +74,31 @@ PPMImage *readPPM(const char *filename)
 }
 
 
-void readData(const char *filename, char *dataout) {
+int readData(char *filename, char *dataout) {
 	char buff[16];
-	PPMImage *img;
+	Image *img;
 	FILE *fp;
 	int c, rgb_comp_color;
-	//open PPM file for reading
+	
 	fp = fopen(filename, "rb");
 	if (!fp) {
-		printf("Unable to open file '%s'\n", filename);
-		exit(1);
+		return -1;
 	}
 	
 	//read image format
 	if (!fgets(buff, sizeof(buff), fp)) {
-		perror(filename);
-		exit(1);
+		return -1;
 	}
  	//check the image format
 	if (buff[0] != 'P' || buff[1] != '6') {
-		printf("Invalid image format (must be 'P6')\n");
-		exit(1);
+		return -1;
 	}
 
-	//alloc memory for image
-	img = (PPMImage *)malloc(sizeof(PPMImage));
+	img = (Image *)malloc(sizeof(Image));
 	if (!img) {
-		printf("Unable to allocate memory\n");
-		exit(1);
+		return -1;
 	}	
 
-	//check for comments
 	c = getc(fp);
 	while (c == '#') {
 		while (getc(fp) != '\n') ;
@@ -118,68 +106,60 @@ void readData(const char *filename, char *dataout) {
 	}
 
 	ungetc(c, fp);
-	//read image size information
 	if (fscanf(fp, "%d %d", &img->x, &img->y) != 2) {
-		printf("Invalid image size (error loading '%s')\n", filename);
-		exit(1);
+		return -1;
 	}
 	
-	//read rgb component
 	if (fscanf(fp, "%d", &rgb_comp_color) != 1) {
-		printf("Invalid rgb component (error loading '%s')\n", filename);
-		exit(1);
+		return -1;
 	}
 
-	//check rgb component depth
-	if (rgb_comp_color!= RGB_COMPONENT_COLOR) {
-		printf("'%s' does not have 8-bits components\n", filename);
-		exit(1);
+	if (rgb_comp_color != MAX_COLOR) {
+		return -1;
 	}
 
 	while (fgetc(fp) != '\n') ;
-	//memory allocation for pixel data
-	img->data = (PPMPixel*)malloc(img->x * img->y * sizeof(PPMPixel));
+	//memory allocation for pixels
+	img->data = (Pixel*)malloc(img->x * img->y * sizeof(Pixel));
 
 	if (!img) {
-		printf("Unable to allocate memory\n");
-		exit(1);
+		return -1;
 	}
 
 	//read pixel data from file
 	if (fread(img->data, 3 * img->x, img->y, fp) != img->y) {
-		printf("Error loading image '%s'\n", filename);
-		exit(1);
+		return -1;
 	}
 	
-	
 	//reading the data
-	int i, len = 15;
+	int i;
 	char *p = dataout;
+	char ch = 'a';
 	if(img){
-	//printf("\n%d\n%d", img->x, img->y);
 		for(i=0;i<img->x*img->y;i++){  
-			if((i % (img ->x)) == (img->x -1) && len != 0) {
+			if(ch == 0)
+					break;
+			if((i % (img ->x)) == (img->x -1)) {
 				int x = img->data[i - 1].red;
-				int y = img->data[i].red ;	
-				//printf("\n%c", x^y);
-				*p++ = (char) x^y;
+				int y = img->data[i].red ;
+				ch = (char) x^y;
+				*p++ = ch;
 				continue;
 			}
 		}
 	*p = '\0';
 	}
-	
 	fclose(fp);
+	return 0;
 }
 
-void writePPM(const char *filename, PPMImage *img)
+int writeImage(char *filename, Image *img)
 {
 	FILE *fp;
 	//open file for output
 	fp = fopen(filename, "wb");
 	if (!fp) {
-		fprintf(stderr, "Unable to open file '%s'\n", filename);
-		exit(1);
+		return -1;
 	}
 
 	//write the header file
@@ -190,39 +170,44 @@ void writePPM(const char *filename, PPMImage *img)
 	fprintf(fp, "%d %d\n",img->x,img->y);
 
 	// rgb component depth
-	fprintf(fp, "%d\n",RGB_COMPONENT_COLOR);
+	fprintf(fp, "%d\n",MAX_COLOR);
 
 	// pixel data
 	fwrite(img->data, 3 * img->x, img->y, fp);
 	fclose(fp);
+	return 0; 	
 }
 
-void changeColorPPM(PPMImage *img, char *inputd)
+void addDataToImage(Image *img, char *inputd)
 {
 	char data[strlen(inputd)];
 	strcpy(data, inputd);
-	int i, len = strlen(data);
+	//initializing to strlen(data) because we are passing string, but when use fgets add -1
+	int i, len = strlen(data) - 1;
 	if(img){
-	//printf("\n%d\n%d", img->x, img->y);
 		for(i=0;i<img->x*img->y;i++){  
-			if((i % (img ->x)) == (img->x -1) && len!=0) {
+			if((i % (img ->x)) == (img->x -1) && len > 0) {
 				img->data[i -1].red = img->data[i].red;
 				img->data[i -1].green = img->data[i].green;
 				img->data[i -1].blue = img->data[i].blue;
 				
-				img->data[i].red = img->data[i].red ^ (int) data[strlen(data) - (len--)] ;
+				img->data[i].red = img->data[i].red ^ (int) data[strlen(data) - (len) - 1] ;
 				img->data[i].green = img->data[i].green;
 				img->data[i].blue = img->data[i].blue;
+				len--;
 				continue;
-			}       
-			img->data[i].red=img->data[i].red;
-			img->data[i].green=img->data[i].green;
-			img->data[i].blue=img->data[i].blue;
-		/*
-			img->data[i].red=img->data[i].red;
-			img->data[i].green= 2 * (img->data[i].green) % 255;
-			img->data[i].blue=img->data[i].blue;
-		*/
+			}
+			if((i % (img ->x)) == (img->x -1) && len == 0) {
+				img->data[i -1].red = img->data[i].red;
+				img->data[i -1].green = img->data[i].green;
+				img->data[i -1].blue = img->data[i].blue;
+				img->data[i].red = img->data[i].red;
+				img->data[i].green = img->data[i].green;
+				img->data[i].blue = img->data[i].blue;
+				len--;
+				break;
+			}
+
 		}
 	}
 }

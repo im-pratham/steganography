@@ -1,16 +1,20 @@
-#include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include "ppm.h"
 
-int readmain(char *filename){
-	//char filename[32];
-	//printf("Enter Image Name\n");
-	//scanf("%s", filename);
-	
-	char data[1024];
-	readData(filename, data);
-	printf("\nRead data :%s\n", data);
-	getchar();
-	return 0;
+char *readmain(char *filename){
+	char *data = (char *) malloc(2048);
+	/*
+	read the data from the image filename into the buffer data
+	*/
+	int err = readData(filename, data);
+	/*
+	check for error occured during reading data from image
+	*/
+	if(err == -1) {
+		return NULL;
+	}
+	/*
+	return data read
+	*/
+	return data;
 }
