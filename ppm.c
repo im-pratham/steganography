@@ -1,3 +1,20 @@
+/*************************************************************************
+*   <Steganography>
+*   Copyright (C) 2016  Prathamesh Anil Mane manepa16.it@coep.ac.in
+*
+*   This program is free software: you can redistribute it and/or modify
+*   it under the terms of the GNU General Public License as published by
+*   the Free Software Foundation, either version 3 of the License, or
+*   (at your option) any later version.
+*
+*   This program is distributed in the hope that it will be useful,
+*   but WITHOUT ANY WARRANTY; without even the implied warranty of
+*   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+*   GNU General Public License for more details.
+*
+*   You should have received a copy of the GNU General Public License
+*   along with this program.  If not, see <http://www.gnu.org/licenses/>
+**************************************************************************/
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -136,10 +153,10 @@ int readData(char *filename, char *dataout) {
 	char *p = dataout;
 	char ch = 'a';
 	if(img){
-		for(i=0;i<img->x*img->y;i++){  
+		for(i=0; i < (img->x * img->y); i++){  
 			if(ch == 0)
 					break;
-			if((i % (img ->x)) == (img->x -1)) {
+			if((i % (img ->x)) == (img->x - 1)) {
 				int x = img->data[i - 1].red;
 				int y = img->data[i].red ;
 				ch = (char) x^y;
@@ -184,12 +201,12 @@ void addDataToImage(Image *img, char *inputd)
 	strcpy(data, inputd);
 	//initializing to strlen(data) because we are passing string, but when use fgets add -1
 	int i, len = strlen(data) - 1;
-	if(img){
-		for(i=0;i<img->x*img->y;i++){  
-			if((i % (img ->x)) == (img->x -1) && len > 0) {
-				img->data[i -1].red = img->data[i].red;
-				img->data[i -1].green = img->data[i].green;
-				img->data[i -1].blue = img->data[i].blue;
+	if(img) {
+		for(i = 0; i < (img->x * img->y); i++) {  
+			if((i % (img ->x)) == (img->x - 1) && len > 0) {
+				img->data[i - 1].red = img->data[i].red;
+				img->data[i - 1].green = img->data[i].green;
+				img->data[i - 1].blue = img->data[i].blue;
 				
 				img->data[i].red = img->data[i].red ^ (int) data[strlen(data) - (len) - 1] ;
 				img->data[i].green = img->data[i].green;
@@ -198,9 +215,9 @@ void addDataToImage(Image *img, char *inputd)
 				continue;
 			}
 			if((i % (img ->x)) == (img->x -1) && len == 0) {
-				img->data[i -1].red = img->data[i].red;
-				img->data[i -1].green = img->data[i].green;
-				img->data[i -1].blue = img->data[i].blue;
+				img->data[i - 1].red = img->data[i].red;
+				img->data[i - 1].green = img->data[i].green;
+				img->data[i - 1].blue = img->data[i].blue;
 				img->data[i].red = img->data[i].red;
 				img->data[i].green = img->data[i].green;
 				img->data[i].blue = img->data[i].blue;
